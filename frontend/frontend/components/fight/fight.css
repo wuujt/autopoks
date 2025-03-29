@@ -1,0 +1,59 @@
+.fightContainer {
+  background-image: url(https://external-preview.redd.it/aC7zQKO6GH1UVuAB_K31hwncC23H-O3C1-CJODnHB_U.png?auto=webp&s=ad1def80446bd62c4931612260ea5fb38ea1af66);
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-size: 100% 150%;
+  font-size: 2vh;
+}
+
+.healthBars-score {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 2%;
+  margin-right: 2%;
+  height: 10%;
+  gap: 2%;
+}
+
+.score {
+  flex: 1;
+  height: 50%;
+  width: 50%;
+  background-color: azure;
+  border-radius: 10%;
+  text-align: center;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.score > * {
+  font-size: 4vh;
+}
+.healthBarFull {
+  height: 10%;
+  background-color: azure;
+  width: 30%;
+  flex: 10;
+}
+.healthBarPercent {
+  height: 100%;
+  background-color: red;
+}
+
+#opponent {
+  transform: scaleX(-1);
+}
+
+#opponentHpPoints {
+  transform: scaleX(-1);
+  text-align: left;
+}
+.hpPoints {
+  text-align: right;
+  margin: 0;
+}

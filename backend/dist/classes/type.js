@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var PokemonType;
+(function (PokemonType) {
+    PokemonType["Normal"] = "normal";
+    PokemonType["Fire"] = "fire";
+    PokemonType["Water"] = "water";
+    PokemonType["Electric"] = "electric";
+    PokemonType["Grass"] = "grass";
+    PokemonType["Ice"] = "ice";
+    PokemonType["Fighting"] = "fighting";
+    PokemonType["Poison"] = "poison";
+    PokemonType["Ground"] = "ground";
+    PokemonType["Flying"] = "flying";
+    PokemonType["Psychic"] = "psychic";
+    PokemonType["Bug"] = "bug";
+    PokemonType["Rock"] = "rock";
+    PokemonType["Ghost"] = "ghost";
+    PokemonType["Dragon"] = "dragon";
+    PokemonType["Dark"] = "dark";
+    PokemonType["Steel"] = "steel";
+    PokemonType["Fairy"] = "fairy";
+})(PokemonType || (PokemonType = {}));
+exports.default = PokemonType;

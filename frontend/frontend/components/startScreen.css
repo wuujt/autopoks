@@ -1,0 +1,17 @@
+.startScreen {
+  background-image: url(https://miludy.pl/wp-content/uploads/2010/08/pokemon-1.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  width: 20%;
+  height: 20%;
+  font-size: 3em;
+}

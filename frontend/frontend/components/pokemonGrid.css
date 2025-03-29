@@ -1,0 +1,109 @@
+.selectPokemonsContainer {
+  background-image: url(https://external-preview.redd.it/aC7zQKO6GH1UVuAB_K31hwncC23H-O3C1-CJODnHB_U.png?auto=webp&s=ad1def80446bd62c4931612260ea5fb38ea1af66);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  font-size: 2vh;
+  display: flex;
+}
+
+.selectPokemonsItems {
+  width: 90%;
+  height: 90%;
+  gap: 1%;
+  display: flex;
+  flex-direction: row;
+  margin-top: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: auto;
+  background-color: grey;
+  border: azure 0.5vw solid;
+  border-radius: 5%;
+  padding: 1%;
+}
+.selectPokemonsItems > * {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  height: 95%;
+}
+
+.pokemonInfo {
+  flex: 1;
+  background-color: azure;
+  border: red 0.5vw solid;
+  border-radius: 5%;
+}
+.pokemonInfo > * {
+  padding: 5%;
+}
+.pokemonsGrid {
+  flex: 5;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0px;
+  background-color: #808080;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.1) 2px,
+      transparent 2px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+  background-size: 10px 10px;
+  border-radius: 10px;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  padding: 0.5vw;
+  border-radius: 5%;
+  border: 0.5vw solid black;
+}
+#pokemon-selected {
+  position: relative;
+  border: 2px solid red; /* Czerwone obramowanie */
+  box-shadow: 0 0 5px 2px red; /* Poświata */
+  border-radius: 3px; /* Zaokrąglenie rogów */
+}
+
+.pokemonsGrid > * {
+  width: 100%;
+  height: 100%;
+}
+.pokemonsGrid > * > * {
+  width: 100%;
+  height: 100%;
+}
+.pokemonsGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.pokemonsList-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2%;
+}
+
+.pokemonList {
+  background-color: #382c3c;
+  border: red 0.5vw solid;
+  border-radius: 5%;
+  width: 80%;
+  flex: 9;
+}
+
+.confirmButton {
+  flex: 1;
+}
+
+#pokemonSelect {
+  font-size: 2vw;
+  width: 80%;
+  height: 100%;
+
+  flex: 1;
+}

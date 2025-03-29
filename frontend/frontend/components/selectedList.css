@@ -1,0 +1,67 @@
+.selectedList {
+  display: flex;
+  gap: 1%;
+  width: 100%;
+}
+
+#row {
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+#column {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.list {
+  display: flex;
+  flex: 1;
+}
+.pokemonInfoHover {
+  display: none;
+  position: fixed;
+  height: 45vh;
+  width: 10vw;
+  min-height: 0px;
+  top: 2%;
+}
+.pokemonInfoHover > * {
+  padding: 2%;
+}
+
+.pokemonInfoHover > * > * > * {
+  font-size: 2vh;
+}
+.pokemonIcon:hover + .pokemonInfoHover {
+  display: block;
+}
+
+.pokemonIcon {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  border-image: url();
+  flex: 1;
+}
+
+#selected {
+  opacity: 0.7;
+}
+
+.questionMark {
+  font-size: 30px;
+}
+
+.primarySecondaryMove {
+  margin-bottom: 5%;
+  flex: 2;
+}
+
+.icon-moves {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}

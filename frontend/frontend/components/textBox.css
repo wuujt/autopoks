@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "PokemonEmerald";
+  src: url("https://wuujt.github.io/font/PokemonEmerald.woff2") format("woff2");
+}
+
+.textBox {
+  border: 4px solid azure;
+  background-color: azure;
+  border-radius: 20px;
+  font-size: 1hv;
+  white-space: pre-line;
+}
