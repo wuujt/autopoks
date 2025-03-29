@@ -11,6 +11,7 @@ import { modes } from "../classes/modes.tsx";
 import "./styles.css";
 
 const App: React.FC = () => {
+  //await
   const fetchedPokemons = Pokemon.getPokemonsFromApi("150");
 
   const [selectedPokemons, setSelectedPokemons] = useState<Pokemon[]>([]);
