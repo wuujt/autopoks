@@ -13,7 +13,7 @@ interface IconGridProps {
 const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [selectedPokemons, setSelectedPokemons] = useState<Pokemon[]>([]);
-  const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(true);
+  const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
   const [isAlert, setIsAlert] = useState(true);
   const { sendJsonMessage, lastMessage } = useCustomWebSocket();
 
