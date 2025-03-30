@@ -29,14 +29,14 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
   const [order, setOrder] = useState<number[]>([0, 1, 2, 3, 4, 5]);
   const [opponentPokemons, setOpponentPokemons] = useState<Pokemon[]>([]);
 
-  const { sendJsonMessage, lastMessage, readyState } = useCustomWebSocket();
+  const { sendJsonMessage, lastMessage } = useCustomWebSocket();
 
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
 
   const [isFetchedOpponent, setIsFetchedOpponent] = useState<boolean>(false);
-  const [pokemonsReversed, setPokemonsReversed] = useState<Pokemon[]>(
-    [...pokemons].reverse()
-  );
+  // const [pokemonsReversed, setPokemonsReversed] = useState<Pokemon[]>(
+  //   [...pokemons].reverse()
+  // );
   const reversedInt = [5, 4, 3, 2, 1, 0];
   useEffect(() => {
     sendJsonMessage({ type: "get", status: "OpponentOrder" });

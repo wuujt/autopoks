@@ -5,7 +5,6 @@ import MovesList from "../movesList/movesList";
 import SelectedTwoMoves from "../selectedMove";
 import { useCustomWebSocket } from "../../socketService";
 import "./movesSelect.css";
-import PokemonInfo from "../pokemonInfo";
 import MoveInfo from "../moveInfo/moveInfo";
 interface MovesSelectProp {
   pokemons: Pokemon[];
@@ -30,7 +29,7 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
   const [settingMoveIndex, setSettingMoveIndex] = useState<number>(0);
   const initialMoves: { [key: string]: number[] } = {};
   const [opponentPokemons, setOpponentPokemons] = useState<Pokemon[]>();
-  const { sendJsonMessage, lastMessage, readyState } = useCustomWebSocket();
+  const { sendJsonMessage, lastMessage } = useCustomWebSocket();
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
 
   pokemons.forEach((pokemon) => {
@@ -131,6 +130,7 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
   const handleSelectPokemon = (pokemon: Pokemon) => {
     setSelectedPokemon(pokemon);
   };
+  if (!isFetchedOpponent) return <> Loading moves...</>;
 
   if (!isFetched) return <> Loading moves...</>;
   if (!opponentPokemons) return <>Loading opponent moves...</>;

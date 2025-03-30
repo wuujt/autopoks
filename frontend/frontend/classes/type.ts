@@ -1,7 +1,7 @@
 class PokemonType {
   name: string;
   iconApi: string;
-  iconUrl: string;
+  iconUrl!: string;
 
   constructor(name: string, iconApi: string) {
     this.name = name;
