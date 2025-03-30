@@ -9,9 +9,10 @@ import { useCustomWebSocket } from "../socketService.ts";
 import "../components/startScreen.css";
 import { modes } from "../classes/modes.tsx";
 import "./styles.css";
-const fetchedPokemons = await Pokemon.getPokemonsFromApi("150");
 
 const App: React.FC = () => {
+  const [fetchedPokemons, setFetchedPokemons] = useState<Pokemon[]>([]);
+
   const [selectedPokemons, setSelectedPokemons] = useState<Pokemon[]>([]);
   const [opponentPokemons, setOpponentPokemons] = useState<Pokemon[]>([]);
   // const [pokemonChanged, setPokemonChanged] = useState<boolean>(false);
@@ -19,10 +20,13 @@ const App: React.FC = () => {
   //   useState<boolean>(false);
 
   const [mode, setMode] = useState<modes>(modes.start);
-  const { sendJsonMessage, lastMessage, readyState } = useCustomWebSocket();
+  const { lastMessage } = useCustomWebSocket();
 
   useEffect(() => {
-    const fetchData = async () => {};
+    const fetchData = async () => {
+      const pokemons = await Pokemon.getPokemonsFromApi("150");
+      setFetchedPokemons(pokemons);
+    };
 
     fetchData();
   }, []);

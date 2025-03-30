@@ -12,10 +12,10 @@ interface TypeApi {
   name: string;
   url: string;
 }
-interface damageClass {
-  name: string;
-  url: string;
-}
+// interface damageClass {
+//   name: string;
+//   url: string;
+// }
 interface MoveDataByUrl {
   accuracy: number;
   power: number;
@@ -33,6 +33,7 @@ class DamageClass {
   }
   static damageClasses: Map<string, DamageClass> = new Map();
 }
+
 export class Move {
   name: string;
   description: string;
@@ -40,20 +41,22 @@ export class Move {
   accuracy: number;
   type: string;
   damageClass: DamageClass;
+
   constructor(
     name: string,
-    despription: string,
+    description: string,
     power: number,
     accuracy: number,
     type: string,
-    damageClass: DamageClass
+    damageClass?: DamageClass
   ) {
     this.name = name;
-    this.description = despription;
+    this.description = description;
     this.power = power;
     this.accuracy = accuracy;
     this.type = type;
-    this.damageClass = damageClass;
+
+    this.damageClass = damageClass || new DamageClass("", "");
   }
 
   static async GetMovesFromApi(pokemonName: string): Promise<Move[]> {

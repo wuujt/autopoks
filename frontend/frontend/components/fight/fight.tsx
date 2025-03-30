@@ -8,6 +8,13 @@ interface FightProp {
   pokemons: Pokemon[];
   opponentPokemons: Pokemon[];
 }
+interface Message {
+  player: string;
+  event: string;
+  attack: string;
+  damage: number;
+  user: string;
+}
 
 const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
   const [hp, setHp] = useState<number>(0);
@@ -19,18 +26,18 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
   const [points, setPoints] = useState<number>(0);
   const [opponentPoints, setOpponentPoints] = useState<number>(0);
 
-  const [currentPokemon, setCurrentPokemon] = useState<Pokemon>(pokemons[0]);
-  const [currentMessage, setCurrentMessage] = useState(null);
+  // const [currentPokemon, setCurrentPokemon] = useState<Pokemon>(pokemons[0]);
+  const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(-1);
 
   const [isFetchedFight, setIsFetchedFight] = useState(false);
   const [fightResult, setFightResult] = useState([]);
   const [player, setPlayer] = useState("");
   const [textToDisplay, setTextToDisplay] = useState("");
-  const [pokemonsReversed, setPokemonsReversed] = useState<Pokemon[]>(
-    [...pokemons].reverse()
-  );
-  const { sendJsonMessage, lastMessage, readyState } = useCustomWebSocket();
+  // const [pokemonsReversed, setPokemonsReversed] = useState<Pokemon[]>(
+  //   [...pokemons].reverse()
+  // );
+  const { sendJsonMessage, lastMessage } = useCustomWebSocket();
 
   useEffect(() => {
     console.log("Sending JSON...");
@@ -127,7 +134,9 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
       if (message.type === "fightResult") {
         const player = message.player;
         setPlayer(player);
-        const parsedMessages = message.messages.map((msg) => JSON.parse(msg));
+        const parsedMessages = message.messages.map((msg: string) =>
+          JSON.parse(msg)
+        );
         setFightResult(parsedMessages);
         setIsFetchedFight(true);
         if (message.player === "player1") {
