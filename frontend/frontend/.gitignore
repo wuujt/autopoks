@@ -7,13 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-git rm --cached frontend/frontend/.gitignore
-git rm --cached frontend/frontend/index.html
-git rm --cached frontend/frontend/package-lock.json
-
-
 node_modules
-dist
+
 dist-ssr
 *.local
 
