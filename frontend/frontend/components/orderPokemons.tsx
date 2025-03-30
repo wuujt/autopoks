@@ -4,6 +4,7 @@ import { Pokemon } from "../classes/pokemon";
 import { useCustomWebSocket } from "../socketService";
 import { Move } from "../classes/moves";
 import "./orderPokemon.css";
+import AlertScreen from "./alertScreen";
 interface OrderPokemonsProps {
   pokemons: Pokemon[];
   onSelectOrderCallback: (
@@ -38,19 +39,12 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
   //   [...pokemons].reverse()
   // );
   const reversedInt = [5, 4, 3, 2, 1, 0];
+  const [isAlert, setIsAlert] = useState(true);
+
   useEffect(() => {
     sendJsonMessage({ type: "get", status: "OpponentOrder" });
   }, []);
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") {
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
-      } else if (event.key === "ArrowRight") {
-        setCurrentIndex((prev) => Math.min(prev + 1, pokemons.length - 1));
-      } else if (event.key === "z" || event.key === "Z") {
-        handleConfirmPokemon();
-      }
-    };
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -58,6 +52,16 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
     };
   }, [currentIndex, selectedIndex]);
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowLeft") {
+      setCurrentIndex((prev) => Math.max(prev - 1, 0));
+    } else if (event.key === "ArrowRight") {
+      setCurrentIndex((prev) => Math.min(prev + 1, pokemons.length - 1));
+    } else if (event.key === "z" || event.key === "Z") {
+      if (isAlert) setIsAlert(false);
+      else handleConfirmPokemon();
+    }
+  };
   const handleConfirmPokemon = () => {
     if (isSelected) {
       const newPokemonsOrder = [...pokemonsOrder];
@@ -66,8 +70,8 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
       newPokemonsOrder[reversedInt[selectedIndex]] =
         pokemonsOrder[reversedInt[currentIndex]];
       const newOrder = [...order];
-      newOrder[currentIndex] = order[selectedIndex];
-      newOrder[selectedIndex] = order[currentIndex];
+      newOrder[reversedInt[currentIndex]] = order[reversedInt[selectedIndex]];
+      newOrder[reversedInt[selectedIndex]] = order[reversedInt[currentIndex]];
       setPokemonsOrder(newPokemonsOrder);
       console.log(newOrder);
 
@@ -161,6 +165,15 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
 
   return (
     <div className="orderPokemonsContainer">
+      {isAlert && (
+        <AlertScreen
+          text={`In this stage you have to select order of your pokemons. This is the last stage before fight \n
+            You see opponent's pokemons and their moves but you do not know his order. \n
+            Press left and right arrows to change pokemons. \n
+            Press z to select pokemon and press again to change order with another pokemons. \n
+            Press z to continue.`}
+        />
+      )}
       <div className="pokemons-moves">
         <div className="pokemons">
           <IconList

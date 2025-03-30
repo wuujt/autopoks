@@ -115,7 +115,13 @@ wss.on("connection", (ws: WebSocket) => {
 
           if (data.status == "FightResult") {
             const game = Maps.getGameFromWebsocket(ws);
-            if (ws === game?.player2.socket) {
+            console.log(game?.player2.isSelectedOrder);
+            console.log(game?.player1.isSelectedOrder);
+            if (
+              ws === game?.player2.socket &&
+              game.player1.isSelectedOrder &&
+              game.player2.isSelectedOrder
+            ) {
               game.requestCounter[1] = true;
               gameEvent.emit("fightReady", game);
             }
@@ -133,6 +139,7 @@ wss.on("connection", (ws: WebSocket) => {
                     messages: game.messages,
                     player1_points: p1,
                     player2_points: p2,
+                    order: game.player2.order,
                   })
                 );
                 game?.player2.sendMessage(
@@ -142,6 +149,7 @@ wss.on("connection", (ws: WebSocket) => {
                     messages: game.messages,
                     player1_points: p1,
                     player2_points: p2,
+                    order: game.player1.order,
                   })
                 );
               });

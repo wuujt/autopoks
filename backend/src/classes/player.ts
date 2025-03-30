@@ -10,6 +10,9 @@ export class Player {
   isSelectedMoves: boolean = false;
 
   isSelectedOrder: boolean = false;
+  order: number[] = [];
+  reversedInt = [5, 4, 3, 2, 1, 0];
+
   constructor(id: number, socket: WebSocket, pokemons: Pokemon[] = []) {
     this.id = id;
     this.socket = socket;
@@ -32,13 +35,13 @@ export class Player {
   }
 
   public changeOrder(data: indexesData): void {
+    this.order = data.indexes;
     const newOrder: Pokemon[] = [];
     data.indexes.forEach((index) => {
       if (index < this.pokemons.length) {
         newOrder.push(this.pokemons[index]);
       }
     });
-
     this.pokemons = newOrder;
   }
   setMovesFromJSON(data: movesData): void {

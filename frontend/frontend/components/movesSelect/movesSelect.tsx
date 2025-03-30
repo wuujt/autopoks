@@ -6,6 +6,7 @@ import SelectedTwoMoves from "../selectedMove";
 import { useCustomWebSocket } from "../../socketService";
 import "./movesSelect.css";
 import MoveInfo from "../moveInfo/moveInfo";
+import AlertScreen from "../alertScreen";
 interface MovesSelectProp {
   pokemons: Pokemon[];
   onSelectMovesCallback: (
@@ -18,6 +19,8 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
   pokemons,
   onSelectMovesCallback,
 }) => {
+  const [isAlert, setIsAlert] = useState(true);
+
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon>(pokemons[0]);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [selectedMoves, setSelectedMoves] = useState<{
@@ -81,24 +84,28 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
     };
 
     fetchAllMoves();
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowUp") {
-        setSelectedIndex((prev) => Math.max(prev - 1, 0));
-      } else if (event.key === "ArrowDown") {
-        setSelectedIndex((prev) =>
-          Math.min(prev + 1, selectedPokemon.moves.length - 1)
-        );
-      } else if (event.key === "z" || event.key === "Z") {
-        handleConfirmMove();
-      }
-    };
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [selectedIndex, selectedPokemon, settingMoveIndex]);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowUp") {
+      setSelectedIndex((prev) => Math.max(prev - 1, 0));
+    } else if (event.key === "ArrowDown") {
+      setSelectedIndex((prev) =>
+        Math.min(prev + 1, selectedPokemon.moves.length - 1)
+      );
+    } else if (event.key === "z" || event.key === "Z") {
+      if (isAlert) setIsAlert(false);
+      else handleConfirmMove();
+    }
+  };
 
   const handleConfirmMove = () => {
     setSelectedMoves((prevMoves) => {
@@ -143,6 +150,17 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
           style={{ display: "none" }}
         ></PokemonInfo>
       </div> */}
+      {isAlert && (
+        <AlertScreen
+          text={`In this stage you have to select moves to every pokemon. \n
+            Now you see opponent's pokemons but you do not know his moves. \n
+            Press left and right arrows to change pokemons and top and bottom arrow to change moves. \n
+            Press z to select move. The index of primary and secondary are changed every move select. \n
+            Primary moves have 80% chance to be selected during fight, secondary have 20%. \n
+            Press z to continue.
+            `}
+        />
+      )}
       <div className="pokemons-moves">
         <div className="pokemons">
           <IconList

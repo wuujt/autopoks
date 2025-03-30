@@ -4,6 +4,7 @@ import { Pokemon } from "../../classes/pokemon";
 import { useCustomWebSocket } from "../../socketService";
 import TextBox from "../textBox";
 import "./fight.css";
+import AlertScreen from "../alertScreen";
 interface FightProp {
   pokemons: Pokemon[];
   opponentPokemons: Pokemon[];
@@ -14,6 +15,7 @@ interface Message {
   attack: string;
   damage: number;
   user: string;
+  order: number[];
 }
 
 const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
@@ -29,7 +31,6 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
   // const [currentPokemon, setCurrentPokemon] = useState<Pokemon>(pokemons[0]);
   const [currentMessage, setCurrentMessage] = useState<Message | null>(null);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(-1);
-
   const [isFetchedFight, setIsFetchedFight] = useState(false);
   const [fightResult, setFightResult] = useState([]);
   const [player, setPlayer] = useState("");
@@ -37,10 +38,11 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
   // const [pokemonsReversed, setPokemonsReversed] = useState<Pokemon[]>(
   //   [...pokemons].reverse()
   // );
+  const [isAlert, setIsAlert] = useState(true);
+  const [opponentOrder, setOpponentOrder] = useState<Pokemon[]>([]);
   const { sendJsonMessage, lastMessage } = useCustomWebSocket();
 
   useEffect(() => {
-    console.log("Sending JSON...");
     sendJsonMessage({ type: "get", status: "FightResult" });
     setHp(pokemons[0].actualHp);
     setMaxHp(pokemons[0].actualHp);
@@ -72,10 +74,9 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
           if (attackNumber == "1") attack = pokemons[0].secondaryMove?.name;
         } else {
           setHp((prev) => Math.max(0, prev - currentMessage.damage));
-          if (attackNumber == "0")
-            attack = opponentPokemons[0].primaryMove?.name;
+          if (attackNumber == "0") attack = opponentOrder[0].primaryMove?.name;
           if (attackNumber == "1")
-            attack = opponentPokemons[0].secondaryMove?.name;
+            attack = opponentOrder[0].secondaryMove?.name;
         }
 
         const text = `${currentMessage.user} used ${attack}, damage done ${currentMessage.damage}`;
@@ -101,20 +102,20 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
             setMaxHp(pokemons[0].actualHp);
           }
         } else {
-          if (opponentPokemons.length === 1) {
-            const pokemonName = opponentPokemons[0].name;
+          if (opponentOrder.length === 1) {
+            const pokemonName = opponentOrder[0].name;
 
-            opponentPokemons.shift();
+            opponentOrder.shift();
             const text = `Pokemon ${pokemonName} has been perished \n There is no more available pokemons.`;
             setTextToDisplay(text);
           } else {
-            const pokemonName = opponentPokemons[0].name;
-            const pokemonToChange = opponentPokemons[1].name;
+            const pokemonName = opponentOrder[0].name;
+            const pokemonToChange = opponentOrder[1].name;
             const text = `Pokemon ${pokemonName} has been perished \n Change to ${pokemonToChange}`;
             setTextToDisplay(text);
-            opponentPokemons.shift();
-            setOpponentHp(opponentPokemons[0].actualHp);
-            setOpponentMaxHp(opponentPokemons[0].actualHp);
+            opponentOrder.shift();
+            setOpponentHp(opponentOrder[0].actualHp);
+            setOpponentMaxHp(opponentOrder[0].actualHp);
           }
         }
         break;
@@ -128,16 +129,19 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
   }, [currentMessage]);
 
   useEffect(() => {
-    console.log(lastMessage);
     if (lastMessage && lastMessage.data) {
       const message = JSON.parse(lastMessage.data);
       if (message.type === "fightResult") {
+        console.log(message);
+
         const player = message.player;
         setPlayer(player);
         const parsedMessages = message.messages.map((msg: string) =>
           JSON.parse(msg)
         );
+        changeOrder(message.order);
         setFightResult(parsedMessages);
+        console.log(parsedMessages);
         setIsFetchedFight(true);
         if (message.player === "player1") {
           setPoints(message.player1_points);
@@ -149,26 +153,46 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
       }
     }
   }, [lastMessage]);
-
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "z" || event.key === "Z") {
+      if (isAlert) setIsAlert(false);
+      else setCurrentMessageIndex((prev) => prev + 1);
+    }
+    if (event.key === "x" || event.key === "X")
+      setCurrentMessageIndex((prev) => prev - 1);
+  };
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "z" || event.key === "Z") {
-        setCurrentMessageIndex((prev) => prev + 1);
-      }
-      if (event.key === "x" || event.key === "X")
-        setCurrentMessageIndex((prev) => prev - 1);
-    };
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isAlert]);
 
+  const changeOrder = (data: number[]): void => {
+    const newOrder: Pokemon[] = [];
+    data.forEach((index) => {
+      if (index < opponentPokemons.length) {
+        newOrder.push(opponentPokemons[index]);
+      }
+    });
+    setOpponentHp(newOrder[0].actualHp);
+    setOpponentMaxHp(newOrder[0].actualHp);
+    setOpponentOrder(newOrder);
+  };
   if (!isFetchedFight) return <p>waiting for data</p>;
   else
     return (
       <div className="fightContainer">
+        {isAlert && (
+          <AlertScreen
+            text={`This is the fight stage. \n
+            Fight are Bo3, after this round u will be able to change order. \n
+            Fight result is calculated by server and you get list of events of fight. \n
+            Press z to go to next event. \n
+            Press z to continue.`}
+          />
+        )}
         <div className="healthBars-score">
           <div className="healthBarFull" id="your">
             <div
@@ -202,7 +226,7 @@ const Fight: React.FC<FightProp> = ({ pokemons, opponentPokemons }) => {
               imageStyle={{ transform: "scaleX(-1)" }}
               isReserved={true}
             ></IconList>
-            <IconList pokemons={opponentPokemons} isRow={true}></IconList>
+            <IconList pokemons={opponentOrder} isRow={true}></IconList>
           </div>
         </div>
         <TextBox text={textToDisplay}></TextBox>

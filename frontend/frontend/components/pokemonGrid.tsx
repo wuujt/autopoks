@@ -86,7 +86,11 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
     <div className="selectPokemonsContainer">
       {isAlert && (
         <AlertScreen
-          text={`It is the first stage of the game \n In this screen you have to select your pokemons \n Press arrows to change selected pokemon\n Press z to confirm \n Press on button to submit \n Press z to continue`}
+          text={`It is the first stage of the game. \n
+            In this screen you have to select your pokemons. \n 
+            Press arrows to change selected pokemon and press z to confirm pokemons. \n
+            Press on button to submit. \n
+            Press z to continue.`}
         />
       )}
       <div className="selectPokemonsItems">
