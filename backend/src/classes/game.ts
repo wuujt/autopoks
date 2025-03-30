@@ -312,6 +312,16 @@ export class Game {
   //   this.counter++;
   //   this.messages.push(JSON.stringify(message));
   // }
+  static async waitForRequest(player: Player): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const interval = setInterval(() => {
+        if (player.isRequestedFight) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 1000);
+    });
+  }
 }
 
 interface pokemonAndMovesData {

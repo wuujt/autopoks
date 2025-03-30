@@ -59,7 +59,7 @@ wss.on("connection", (ws: WebSocket) => {
         case "queue":
           if (data.status === "add") {
             var p = getClientBySocket(ws);
-            Queue.addPlayer(p);
+            await Queue.addPlayer(p);
           }
         case "game":
           if (data.status == "selectedPokemons") {
@@ -115,42 +115,37 @@ wss.on("connection", (ws: WebSocket) => {
 
           if (data.status == "FightResult") {
             const game = Maps.getGameFromWebsocket(ws);
-            if (
-              ws === game?.player2.socket &&
-              game.player1.isSelectedOrder &&
-              game.player2.isSelectedOrder
-            ) {
-              game.requestCounter[1] = true;
-              gameEvent.emit("fightReady", game);
+
+            if (ws === game?.player2.socket) {
+              game.player2.isRequestedFight = true;
             }
 
             if (ws === game?.player1.socket) {
-              gameEvent.once("fightReady", (game: Game) => {
-                const p1 = game.player1Points;
-                const p2 = game.player2Points;
-                game?.Round();
+              await Game.waitForRequest(game.player2);
+              const p1 = game.player1Points;
+              const p2 = game.player2Points;
+              game?.Round();
 
-                game?.player1.sendMessage(
-                  JSON.stringify({
-                    type: "fightResult",
-                    player: "player1",
-                    messages: game.messages,
-                    player1_points: p1,
-                    player2_points: p2,
-                    order: game.player2.order,
-                  })
-                );
-                game?.player2.sendMessage(
-                  JSON.stringify({
-                    type: "fightResult",
-                    player: "player2",
-                    messages: game.messages,
-                    player1_points: p1,
-                    player2_points: p2,
-                    order: game.player1.order,
-                  })
-                );
-              });
+              game?.player1.sendMessage(
+                JSON.stringify({
+                  type: "fightResult",
+                  player: "player1",
+                  messages: game.messages,
+                  player1_points: p1,
+                  player2_points: p2,
+                  order: game.player2.order,
+                })
+              );
+              game?.player2.sendMessage(
+                JSON.stringify({
+                  type: "fightResult",
+                  player: "player2",
+                  messages: game.messages,
+                  player1_points: p1,
+                  player2_points: p2,
+                  order: game.player1.order,
+                })
+              );
             }
           }
 

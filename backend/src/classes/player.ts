@@ -10,6 +10,7 @@ export class Player {
   isSelectedMoves: boolean = false;
 
   isSelectedOrder: boolean = false;
+  isRequestedFight: boolean = false;
   order: number[] = [];
   reversedInt = [5, 4, 3, 2, 1, 0];
 
