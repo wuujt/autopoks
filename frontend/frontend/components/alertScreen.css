@@ -1,0 +1,20 @@
+.alertScreenContainer {
+  height: 50vh;
+  width: 50vw;
+  background-color: azure;
+  border-radius: 10%;
+  position: absolute;
+  bottom: 0; /* Umieszcza na samym dole */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+
+  border: 0.5vw black solid;
+  white-space: pre-line;
+}
+
+.alertScreenContainer > * {
+  padding: 2%;
+  text-transform: none;
+  font-size: 2vw;
+}

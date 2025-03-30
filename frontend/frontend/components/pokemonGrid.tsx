@@ -4,6 +4,7 @@ import { Pokemon } from "../classes/pokemon";
 import PokemonInfo from "./pokemonInfo";
 import { useCustomWebSocket } from "../socketService";
 import "./pokemonGrid.css";
+import AlertScreen from "./alertScreen";
 interface IconGridProps {
   pokemons: Pokemon[];
   onSelectPokemon: (selectedPokemon: Pokemon[]) => void;
@@ -12,7 +13,8 @@ interface IconGridProps {
 const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [selectedPokemons, setSelectedPokemons] = useState<Pokemon[]>([]);
-  const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
+  const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(true);
+  const [isAlert, setIsAlert] = useState(true);
   const { sendJsonMessage, lastMessage } = useCustomWebSocket();
 
   const handleConfirm = () => {
@@ -69,7 +71,8 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
       } else if (event.key === "ArrowUp") {
         setSelectedIndex((prev) => Math.max(prev - 10, 0));
       } else if (event.key === "z" || event.key === "Z") {
-        handleConfirm();
+        if (isAlert) setIsAlert(false);
+        else handleConfirm();
       }
     };
 
@@ -81,6 +84,11 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
 
   return (
     <div className="selectPokemonsContainer">
+      {isAlert && (
+        <AlertScreen
+          text={`It is the first stage of the game \n In this screen you have to select your pokemons \n Press arrows to change selected pokemon\n Press z to confirm \n Press on button to submit \n Press z to continue`}
+        />
+      )}
       <div className="selectPokemonsItems">
         <div className="pokemonInfo">
           <PokemonInfo pokemon={pokemons[selectedIndex]}></PokemonInfo>
@@ -110,7 +118,7 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
             id="pokemonSelect"
             onClick={handleConfirmAll}
           >
-            Confirm
+            Submit
           </button>
         </div>
       </div>
