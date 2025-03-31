@@ -159,7 +159,9 @@ wss.on("connection", (ws: WebSocket) => {
 
   ws.on("close", () => {
     console.log("Client disconnected");
-    // Opcjonalnie usuwamy klienta z mapy, kiedy się rozłączy
+    var p = getClientBySocket(ws);
+
+    if (p) Queue.removePlayer(p);
     for (let [clientId, client] of clients.entries()) {
       if (client.ws === ws) {
         clients.delete(clientId);

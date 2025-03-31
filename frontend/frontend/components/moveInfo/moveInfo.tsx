@@ -10,7 +10,8 @@ interface MovesInfoProp {
 const MoveInfo: React.FC<MovesInfoProp> = ({ move }) => {
   return (
     <div className="moveInfo">
-      <p>Type: {move.type}</p>
+      {move.type && <p>Type: {move.type}</p>}
+      {!move.type && <p>Type: No type</p>}
       <p>Class: {move.damageClass.name}</p>
 
       <p>Power: {move.power}</p>
