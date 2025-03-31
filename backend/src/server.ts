@@ -115,13 +115,17 @@ wss.on("connection", (ws: WebSocket) => {
 
           if (data.status == "FightResult") {
             const game = Maps.getGameFromWebsocket(ws);
+            console.log("FightResult");
+            if (ws === game?.player2.socket) console.log("player2");
+            else console.log("player1");
 
             if (ws === game?.player2.socket) {
               game.player2.isRequestedFight = true;
             }
 
             if (ws === game?.player1.socket) {
-              await Game.waitForRequest(game.player2);
+              if (!game.player2.isRequestedFight)
+                await Game.waitForRequest(game.player2);
               const p1 = game.player1Points;
               const p2 = game.player2Points;
               game?.Round();
