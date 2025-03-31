@@ -12,13 +12,13 @@ const PokemonInfo: React.FC<pokemonInfoProp> = ({ pokemon, style }) => {
       <img className="pokemonIconInfo" src={pokemon.iconSelect}></img>
       <div className="pokemonStats">
         <p>Name : {pokemon.name}</p>
-        <p>
+{/*         <p>
           Type:{" "}
           <img className="pokemonTypeIcon" src={pokemon.type1.iconUrl}></img>
           {pokemon.type2 && (
             <img className="pokemonTypeIcon" src={pokemon.type2.iconUrl}></img>
           )}
-        </p>
+        </p> */}
 
         <p>Hp: {pokemon.hp} </p>
         <p>Attack: {pokemon.attack}</p>
