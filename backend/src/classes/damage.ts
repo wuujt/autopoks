@@ -144,9 +144,9 @@ export class Damage {
     const level = 50;
     if (move) {
       const effectiveness1 = this.getEffectiveness(move.type, defenser.type1);
-      const effectiveness2 = defenser.type1
+      const effectiveness2 = defenser.type2
         ? this.getEffectiveness(move.type, defenser.type2)
-        : 0;
+        : 1;
       if (move.damageClass == "status") return 10;
       const attackn =
         move.damageClass == "special"
@@ -161,7 +161,8 @@ export class Damage {
         ((((2 * level) / 5 + 2) * move.power * attackn) / defense / 50) *
         rand *
         effectiveness1 *
-        effectiveness2;
+        effectiveness2 *
+        stab;
       return Math.round(dmg);
     }
     return 0;

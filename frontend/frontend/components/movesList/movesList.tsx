@@ -12,6 +12,7 @@ const MovesList: React.FC<MovesListProp> = ({
   selectedIndex,
   style,
 }) => {
+  if (selectedIndex > moves.length) selectedIndex = moves.length - 1;
   const numberOfMoves = 4;
   const startIndex = Math.max(0, selectedIndex - numberOfMoves);
   const endIndex = Math.max(selectedIndex + 1, numberOfMoves + 1);
