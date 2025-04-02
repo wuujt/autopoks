@@ -6,6 +6,7 @@ import { Queue } from "./classes/queue";
 import { Player } from "./classes/player";
 import { Maps } from "./classes/maps";
 import { Pokemon } from "./classes/pokemon";
+import { GameModes } from "./classes/modes";
 
 const app = express();
 const server = http.createServer(app);
@@ -62,10 +63,30 @@ wss.on("connection", (ws: WebSocket) => {
             await Queue.addPlayer(p);
           }
         case "game":
+          if (data.status == "survival") {
+            var player = getClientBySocket(ws);
+            if (player) {
+              const playerModel = new Player(player.id, player.ws);
+
+              const game = new Game(
+                playerModel,
+                new Player(1000, player.ws),
+                GameModes.SurviveVsComputer
+              );
+              Game.liveGames.push(game);
+              Maps.addPlayerToGameId(playerModel, game);
+              Maps.addPlayerSocket(ws, playerModel);
+              playerModel.sendMessage("GameCreated");
+            }
+          }
           if (data.status == "selectedPokemons") {
             const player = Maps.getPlayerFromPlayerSocket(ws);
             const pokemons = Game.createPokemonsFromJSON(data);
+            const game = Maps.getGameFromWebsocket(ws);
             if (player) player._pokemons = pokemons;
+            if (game?.gameMode == GameModes.SurviveVsComputer) {
+              player?.sendMessage("setPokemons");
+            }
             if (player) player.sendMessage("selectedPokemons");
             if (player) Game.playerSelectedPokemons(player);
           }
@@ -94,6 +115,10 @@ wss.on("connection", (ws: WebSocket) => {
                 names: opponent?.pokemons.map((pokemon) => pokemon.name),
               })
             );
+          }
+          if (data.status == "surviveSelectedOrder") {
+            var r = Game.createPokemonsFromJSON(data);
+            console.log(r);
           }
           if (data.status == "OpponentOrder") {
             const player = Maps.getPlayerFromPlayerSocket(ws);

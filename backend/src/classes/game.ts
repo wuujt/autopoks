@@ -3,11 +3,13 @@ import { Maps } from "./maps";
 import { Player } from "./player";
 import { Pokemon } from "./pokemon";
 import { Damage } from "./damage";
+import { GameModes } from "./modes";
+import { Move } from "./moves";
 
 export class Game {
   static liveGames: Game[] = [];
   static nextId: number = 1;
-
+  gameMode: GameModes;
   gameId: number;
   player1: Player;
   player2: Player;
@@ -23,13 +25,14 @@ export class Game {
   messages: string[] = [];
   requestCounter: boolean[] = [false, false];
 
-  constructor(player1: Player, player2: Player) {
+  constructor(player1: Player, player2: Player, gameMode: GameModes) {
     this.gameId = Game.generateGameId();
     this.player1 = player1;
     this.player2 = player2;
     this.status = true; // Game starts as active
     this.result = "";
     this.round = 1; // Initial round
+    this.gameMode = gameMode;
   }
 
   setPokemons(): void {
@@ -206,28 +209,33 @@ export class Game {
       // Add more cases here if you have more events
     }
   }
-
+  static createPokemonsAndOpponentFromJSON(data: pokemonsAndOpponentData): {
+    p1: Pokemon[];
+    p2: Pokemon[];
+  } {
+    const r1 = this.createPokemonsFromJSON({ pokemons: data.pokemons });
+    const r2 = this.createPokemonsFromJSON({ pokemons: data.opponentPokemons });
+    return { p1: r1, p2: r2 };
+  }
   static createPokemonsFromJSON(data: pokemonsData): Pokemon[] {
-    return data.pokemons.map((pokemon) => {
-      // const twoMoves = data.moves[pokemon.name];
-      // const pokemonMoves = pokemon.moves;
-
-      return new Pokemon(
-        pokemon.name,
-        pokemon.hp,
-        pokemon.attack,
-        pokemon.level,
-        pokemon.defense,
-        pokemon.specialAttack,
-        pokemon.specialDefense,
-        pokemon.speed,
-        pokemon.iconSelect,
-        pokemon.type1,
-        pokemon.type2
-        // pokemonMoves[twoMoves[0]],
-        // pokemonMoves[twoMoves[1]]
-      );
-    });
+    return data.pokemons.map(
+      (pokemon) =>
+        new Pokemon(
+          pokemon.name,
+          pokemon.hp,
+          pokemon.attack,
+          pokemon.level,
+          pokemon.defense,
+          pokemon.specialAttack,
+          pokemon.specialDefense,
+          pokemon.speed,
+          pokemon.iconSelect,
+          pokemon.type1,
+          pokemon.type2,
+          pokemon.primaryMove ?? undefined,
+          pokemon.secondaryMove ?? undefined
+        )
+    );
   }
 
   static playerSelectedPokemons(player: Player): void {
@@ -256,6 +264,8 @@ export class Game {
       opponent.sendMessage("OpponentSelectedOrder");
     }
   }
+
+  setSurviveGame(data: surviveData): void {}
 
   generateAttackMessage(
     player: string,
@@ -331,4 +341,28 @@ interface pokemonAndMovesData {
 
 interface pokemonsData {
   pokemons: Pokemon[];
+}
+
+interface pokemonsAndOpponentData {
+  pokemons: Pokemon[];
+  opponentPokemons: Pokemon[];
+}
+
+interface surviveData {
+  type: string;
+  status: string;
+  playersPokemons: {
+    pokemonName: string;
+    type1: string;
+    type2: string;
+    primaryMove: Move;
+    secondaryMove: Move;
+  };
+  opponentPokemons: {
+    pokemonName: string;
+    type1: string;
+    type2: string;
+    primaryMove: Move;
+    secondaryMove: Move;
+  };
 }

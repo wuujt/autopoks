@@ -2,6 +2,7 @@ import { Client } from "../server";
 import { Game } from "../classes/game";
 import { Player } from "./player";
 import { Maps } from "./maps";
+import { GameModes } from "./modes";
 
 export class Queue {
   private static playersInQueue: Client[] = [];
@@ -37,7 +38,7 @@ export class Queue {
       Maps.addPlayerOpponent(playerModel, opponentModel);
       Maps.addPlayerOpponent(opponentModel, playerModel);
       // Start a new game with the paired players
-      const game = new Game(playerModel, opponentModel);
+      const game = new Game(playerModel, opponentModel, GameModes.vsPlayer);
       Game.liveGames.push(game);
       Maps.addPlayerToGameId(playerModel, game);
       Maps.addPlayerToGameId(opponentModel, game);
