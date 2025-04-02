@@ -5,3 +5,9 @@ export enum modes {
   orderSelect,
   fight,
 }
+
+export enum GameModes {
+  none,
+  vsPlayer,
+  SurviveVsComputer,
+}

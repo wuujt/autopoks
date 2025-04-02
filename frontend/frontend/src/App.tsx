@@ -8,6 +8,7 @@ import { Pokemon } from "../classes/pokemon";
 import { useCustomWebSocket } from "../socketService.ts";
 import "../components/startScreen.css";
 import { modes } from "../classes/modes.tsx";
+import { GameModes } from "../classes/modes.tsx";
 import "./styles.css";
 
 const App: React.FC = () => {
@@ -20,6 +21,8 @@ const App: React.FC = () => {
   //   useState<boolean>(false);
 
   const [mode, setMode] = useState<modes>(modes.start);
+  const [gameMode, setGameMode] = useState<GameModes>(GameModes.none);
+
   const { lastMessage } = useCustomWebSocket();
 
   useEffect(() => {
@@ -39,10 +42,13 @@ const App: React.FC = () => {
   //Callbacks from child components
 
   //startScreenCallback
-  const handlePlayClicked = () => {
+  const handlePlayClicked = (gameMode: GameModes) => {
     setMode((prevMode) => prevMode + 1);
+    setGameMode(gameMode);
   };
-
+  useEffect(() => {
+    console.log(gameMode);
+  }, [gameMode]);
   //pokemonSelectScreenCallback
   const handleSelectPokemon = async (selectedPokemon: Pokemon[]) => {
     //mode changes after settingPokemons using useEffect
@@ -112,6 +118,7 @@ const App: React.FC = () => {
         <IconGrid
           pokemons={fetchedPokemons}
           onSelectPokemon={handleSelectPokemon}
+          gameMode={gameMode}
         />
       </div>
     );
@@ -123,6 +130,7 @@ const App: React.FC = () => {
         <MovesSelect
           pokemons={selectedPokemons}
           onSelectMovesCallback={handleSelectMoves}
+          gameMode={gameMode}
         ></MovesSelect>
       </div>
     );
@@ -133,6 +141,7 @@ const App: React.FC = () => {
         <OrderPokemons
           pokemons={selectedPokemons}
           onSelectOrderCallback={handleSelectOrder}
+          gameMode={gameMode}
         ></OrderPokemons>
       </div>
     );

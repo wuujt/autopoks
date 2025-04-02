@@ -7,17 +7,20 @@ import { useCustomWebSocket } from "../../socketService";
 import "./movesSelect.css";
 import MoveInfo from "../moveInfo/moveInfo";
 import AlertScreen from "../alertScreen";
+import { GameModes } from "../../classes/modes";
 interface MovesSelectProp {
   pokemons: Pokemon[];
   onSelectMovesCallback: (
     selectedPokemons: Pokemon[],
     moves: { [key: string]: number[] }
   ) => void;
+  gameMode: GameModes;
 }
 
 const MovesSelect: React.FC<MovesSelectProp> = ({
   pokemons,
   onSelectMovesCallback,
+  gameMode,
 }) => {
   const [isAlert, setIsAlert] = useState(true);
 
@@ -31,7 +34,7 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
 
   const [settingMoveIndex, setSettingMoveIndex] = useState<number>(0);
   const initialMoves: { [key: string]: number[] } = {};
-  const [opponentPokemons, setOpponentPokemons] = useState<Pokemon[]>();
+  const [opponentPokemons, setOpponentPokemons] = useState<Pokemon[]>([]);
   const { sendJsonMessage, lastMessage } = useCustomWebSocket();
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
 
@@ -71,7 +74,9 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
   }, [lastMessage]);
 
   useEffect(() => {
-    sendJsonMessage({ type: "get", status: "OpponentPokemons" });
+    if (gameMode == GameModes.SurviveVsComputer) {
+      setIsFetchedOpponent(true);
+    } else sendJsonMessage({ type: "get", status: "OpponentPokemons" });
 
     const fetchAllMoves = async () => {
       await Promise.all(pokemons.map((pokemon) => pokemon.fetchMoves()));
@@ -127,6 +132,9 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
         (pokemon) => pokemon.moves[selectedMoves[pokemon.name][0]]
       ),
     });
+    if (gameMode === GameModes.SurviveVsComputer)
+      onSelectMovesCallback(pokemons, selectedMoves);
+
     setIsWaitingForOpponent(true);
   };
 
@@ -140,7 +148,8 @@ const MovesSelect: React.FC<MovesSelectProp> = ({
   if (!isFetchedOpponent) return <> Loading moves...</>;
 
   if (!isFetched) return <> Loading moves...</>;
-  if (!opponentPokemons) return <>Loading opponent moves...</>;
+  if (!opponentPokemons && gameMode == GameModes.vsPlayer)
+    return <>Loading opponent moves...</>;
 
   return (
     <div className="movesSelectContainer">

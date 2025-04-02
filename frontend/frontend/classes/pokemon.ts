@@ -28,6 +28,7 @@ interface Result {
   name: string;
 }
 export class Pokemon {
+  static ListPokemonsBase410: Pokemon[] = [];
   level: number;
   name: string;
   //base stats
@@ -86,6 +87,44 @@ export class Pokemon {
     this.actualSpecialDefense = this.calculateOtherStats(this.specialDefense);
     this.actualSpeed = this.calculateOtherStats(this.speed);
   }
+  static async generateComputerPokemons(): Promise<Pokemon[]> {
+    const oppPokemon: Pokemon[] = [];
+    const length = this.ListPokemonsBase410.length;
+
+    while (oppPokemon.length < 6) {
+      const randomIndex = Math.floor(Math.random() * length);
+      const randomPokemon = this.ListPokemonsBase410[randomIndex];
+
+      if (!oppPokemon.includes(randomPokemon)) {
+        oppPokemon.push(randomPokemon);
+      }
+    }
+
+    await Promise.all(
+      oppPokemon.map(async (pokemon) => {
+        await pokemon.fetchMoves();
+        const result = this.getMoves(pokemon);
+        pokemon.primaryMove = result.pMove;
+        pokemon.secondaryMove = result.sMove;
+      })
+    );
+
+    return oppPokemon;
+  }
+
+  static getMoves(pokemon: Pokemon): { pMove: Move; sMove: Move } {
+    const moves50: Move[] = pokemon.moves.filter((move) => move.power >= 50);
+
+    if (moves50.length < 2) {
+      return { pMove: pokemon.moves[0], sMove: pokemon.moves[1] };
+    }
+
+    return { pMove: moves50[0], sMove: moves50[1] };
+  }
+
+  async fetchMoves(): Promise<void> {
+    this.moves = await Move.GetMovesFromApi(this.name);
+  }
 
   static async fromAPI(pokemonName: string): Promise<Pokemon> {
     try {
@@ -133,7 +172,10 @@ export class Pokemon {
       const _type2 =
         PokemonType.types.get(type2?.name) ?? new PokemonType("unknown", "");
 
-      return new Pokemon(
+      const sum =
+        hp + attack + defense + specialAttack + specialDefense + speed;
+
+      var pokemon = new Pokemon(
         name,
         hp,
         attack,
@@ -146,6 +188,9 @@ export class Pokemon {
         _type1,
         _type2
       );
+
+      if (sum > 410) this.ListPokemonsBase410.push(pokemon);
+      return pokemon;
     } catch (error) {
       console.error(error);
       throw new Error("Failed to fetch Pokémon data");
@@ -186,8 +231,5 @@ export class Pokemon {
   calculateOtherStats(base: number): number {
     const stat = Math.floor((2 * base * this.level) / 100) + 5;
     return stat;
-  }
-  async fetchMoves(): Promise<void> {
-    this.moves = await Move.GetMovesFromApi(this.name);
   }
 }

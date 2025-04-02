@@ -5,12 +5,20 @@ import PokemonInfo from "./pokemonInfo";
 import { useCustomWebSocket } from "../socketService";
 import "./pokemonGrid.css";
 import AlertScreen from "./alertScreen";
+import { GameModes } from "../classes/modes";
+import getText from "../classes/textes";
+
 interface IconGridProps {
   pokemons: Pokemon[];
   onSelectPokemon: (selectedPokemon: Pokemon[]) => void;
+  gameMode: GameModes;
 }
 
-const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
+const IconGrid: React.FC<IconGridProps> = ({
+  pokemons,
+  onSelectPokemon,
+  gameMode,
+}) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [selectedPokemons, setSelectedPokemons] = useState<Pokemon[]>([]);
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(false);
@@ -50,6 +58,9 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
   }, [isWaitingForOpponent]);
 
   useEffect(() => {
+    if (lastMessage?.data) console.log(lastMessage.data);
+  }, [lastMessage]);
+  useEffect(() => {
     if (lastMessage) {
       if (lastMessage.data === "selectedPokemons") {
         setIsWaitingForOpponent(true);
@@ -57,6 +68,11 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
       if (lastMessage.data === "OpponentSelectedPokemons") {
         onSelectPokemon(selectedPokemons);
       }
+      if (
+        gameMode == GameModes.SurviveVsComputer &&
+        lastMessage.data === "setPokemons"
+      )
+        onSelectPokemon(selectedPokemons);
     }
   }, [lastMessage, onSelectPokemon]);
 
@@ -84,15 +100,7 @@ const IconGrid: React.FC<IconGridProps> = ({ pokemons, onSelectPokemon }) => {
 
   return (
     <div className="selectPokemonsContainer">
-      {isAlert && (
-        <AlertScreen
-          text={`It is the first stage of the game. \n
-            In this screen you have to select your pokemons. \n 
-            Press arrows to change selected pokemon and press z to confirm pokemons. \n
-            Press on button to submit. \n
-            Press z to continue.`}
-        />
-      )}
+      {isAlert && <AlertScreen text={getText(2, gameMode)} />}
       <div className="selectPokemonsItems">
         <div className="pokemonInfo">
           <PokemonInfo pokemon={pokemons[selectedIndex]}></PokemonInfo>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useCustomWebSocket } from "../socketService";
 import AlertScreen from "./alertScreen";
+import { GameModes } from "../classes/modes";
 interface StartScreenProps {
-  playClickedCallback: () => void;
+  playClickedCallback: (gameMode: GameModes) => void;
 }
 
 const StartScreen: React.FC<StartScreenProps> = ({ playClickedCallback }) => {
@@ -25,9 +26,11 @@ const StartScreen: React.FC<StartScreenProps> = ({ playClickedCallback }) => {
   useEffect(() => {
     if (lastMessage) {
       if (lastMessage.data === "OpponentFound") {
-        playClickedCallback();
+        playClickedCallback(GameModes.vsPlayer);
         setIsQueued(false);
       }
+      if (lastMessage.data === "GameCreated")
+        playClickedCallback(GameModes.SurviveVsComputer);
     }
   }, [lastMessage, playClickedCallback]);
 
@@ -36,6 +39,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ playClickedCallback }) => {
     setIsQueued(true);
   };
 
+  const handlePlayVsComputerClick = () => {
+    sendJsonMessage({ type: "game", status: "survival" });
+  };
   return (
     <div className="startScreen">
       {isAlert && (
@@ -50,6 +56,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ playClickedCallback }) => {
       <button onClick={handlePlayClick} disabled={isQueued}>
         Play
       </button>
+      <button onClick={handlePlayVsComputerClick}>Play survive</button>
       {isQueued && <p>Waiting in queue...</p>}
     </div>
   );

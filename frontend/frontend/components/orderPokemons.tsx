@@ -5,12 +5,14 @@ import { useCustomWebSocket } from "../socketService";
 import { Move } from "../classes/moves";
 import "./orderPokemon.css";
 import AlertScreen from "./alertScreen";
+import { GameModes } from "../classes/modes";
 interface OrderPokemonsProps {
   pokemons: Pokemon[];
   onSelectOrderCallback: (
     selectedOrder: Pokemon[],
     opponentPokemons: Pokemon[]
   ) => void;
+  gameMode: GameModes;
 }
 interface movesFromServer {
   name: string;
@@ -22,6 +24,7 @@ interface movesFromServer {
 const OrderPokemon: React.FC<OrderPokemonsProps> = ({
   pokemons,
   onSelectOrderCallback,
+  gameMode,
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -42,8 +45,19 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
   const [isAlert, setIsAlert] = useState(true);
 
   useEffect(() => {
-    sendJsonMessage({ type: "get", status: "OpponentOrder" });
+    const fetchOpponentPokemons = async () => {
+      if (gameMode === GameModes.SurviveVsComputer) {
+        const opponentPokemons = await Pokemon.generateComputerPokemons();
+        setOpponentPokemons(opponentPokemons);
+        setIsFetchedOpponent(true);
+      } else {
+        sendJsonMessage({ type: "get", status: "OpponentOrder" });
+      }
+    };
+
+    fetchOpponentPokemons();
   }, []);
+
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
 
@@ -86,6 +100,21 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
   };
 
   const handleConfirmAll = () => {
+    if (gameMode == GameModes.SurviveVsComputer) {
+      sendJsonMessage({
+        type: "game",
+        status: "surviveSelectedOrder",
+        indexes: order,
+        pokemons: opponentPokemons.map((pokemon) => ({
+          ...pokemon,
+          moves: null,
+          type1: pokemon.type1.name,
+          type2: pokemon.type2.name,
+          primaryMove: pokemon.primaryMove,
+          secondaryMove: pokemon.secondaryMove,
+        })),
+      });
+    }
     sendJsonMessage({ type: "game", status: "selectedOrder", indexes: order });
     setIsWaitingForOpponent(true);
   };
@@ -157,9 +186,6 @@ const OrderPokemon: React.FC<OrderPokemonsProps> = ({
       console.error("Error fetching pokemons:", error);
     }
   };
-  useEffect(() => {
-    setIsFetchedOpponent(true);
-  }, [opponentPokemons]);
 
   if (!isFetchedOpponent) return <> Loading...</>;
 

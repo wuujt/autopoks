@@ -84,7 +84,6 @@ export class Move {
       const response = await fetch(`${url}`);
 
       const data = (await response.json()) as MoveDataByUrl;
-      console.log(data.damage_class);
       const damageClassName = data.damage_class.name;
       let damageClass;
       if (DamageClass.damageClasses.get(damageClassName))
